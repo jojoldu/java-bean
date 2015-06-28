@@ -1,8 +1,7 @@
 var mongo = require('mongodb');
 
 var Server = mongo.Server,
-	Db = mongo.Db,
-	BSON = mongo.BSONPure;
+	Db = mongo.Db;
 
 var server = new Server('localhost', 27017, {auto_reconnect : true});
 db = new Db('memberdb', server);
@@ -11,10 +10,10 @@ db.open(function(err, db){
 	if(!err){
 		console.log('Connected to "memberdb" database');
 		
-		db.collection('members', { strict : true }, function(err, collection){
+		db.collection('member', { strict : true }, function(err, collection){
 			
 			if(err){
-				console.log('members collection not exist');
+				console.log('member collection not exist');
 				populateDB();
 			}
 
@@ -26,36 +25,32 @@ exports.findById = function(req, res){
 	var id = req.params.id;
 	console.log('get member : ' + id);
 
-	db.collection('members', function(err, collection){
-		collection.findOne({'_id': new BSON.ObjectID(id)}, function(err, item){
-			res.send(item);
-		});
+	db.collection('member').findOne({'id': id}, function(err, item){
+		res.send(item);
 	});
 };
 
 exports.findAll = function(req, res){
-	console.log('find All Members');
+	console.log('find All member');
 
-	db.collection('members', function(err, collection){
-		collection.find().toArray(function(err, items){
-			res.send(items);
-		});
+	db.collection('member').find().toArray(function(err, items){
+		res.send(items);
 	});
 };
 
 exports.add = function(req, res){
 	var member = req.body;
-	console.log('add : '+JSON.stringify(member));
+	console.log('add : '+ member);
 
-	db.collection('members', function(err, collection){
-		collection.insert(member, {safe : true}, function(err, result){
-			if(err){
-				res.send({'error' : 'add error'});
-			}else{
-				console.log('success : '+ JSON.stringify(result[0]));
-				res.send(result[0]);
-			}
-		});
+	db.collection('member').insert(member, {safe : true}, function(err, result){
+			
+		if(err){
+			res.send({'error' : 'add error'});
+		}else{
+			console.log('success : '+ JSON.stringify(result[0]));
+			res.send(result[0]);
+		}
+
 	});
 }
 
@@ -65,17 +60,16 @@ exports.update = function(req, res){
 	console.log('update member : '+ id);
 	console.log(JSON.stringify(member));
 
-	db.collection('members', function(err, collection){
-		collection.update({'_id' : new BSON.ObjectID(id)}, member, {safe : true}, function(err, result){
+	db.collection('member').update({'id' : id}, member, {safe : true}, function(err, result){
 
-			if(err){
-				console.log('update error : '+err);
-				res.send({'error' : 'update error'});
-			}else{
-				console.log('' + result + ' document(s) updated');
-				res.send(member);
-			}
-		});
+		if(err){
+			console.log('update error : '+err);
+			res.send({'error' : 'update error'});
+		}else{
+			console.log(result + ' document(s) update');
+			res.send(member);
+		}
+
 	});
 };
 
@@ -83,22 +77,22 @@ exports.delete = function(req, res){
 	var id = req.params.id;
 	console.log('delete member : '+id);
 
-	db.collection('members', function(err, collection){
-		collection.remove({'_id' : new BSON.ObjectID(id)}, {safe:true}, function(err, result){
-			if(err){
-				res.send({'error' : 'delete error'});
-			}else{
-				console.log(''+result +' document(s) delete');
-				res.send(req.body);
-			}
-		});
+	db.collection('member').remove({'id' : id}, {safe:true}, function(err, result){
+		
+		if(err){
+			res.send({'error' : 'delete error'});
+		}else{
+			console.log(result + ' document(s) delete');
+			res.send(req.body);
+		}
+
 	});
 };
 
 var populateDB = function() {
  	console.log('populate DB');
 
-    var members = [
+    var member = [
     {
     	id: 'jojoldu',
         name: 'DongUk Lee',
@@ -107,14 +101,12 @@ var populateDB = function() {
         phone : '010-3583-1515'
     }];
  
-    db.collection('members', function(err, collection) {
-        collection.insert(members, {safe:true}, function(err, result) {
-        	if(err){
-        		console.log('insert error');
-        	}else{
-        		console.log('insert success');
-        	}
-        });
+    db.collection('member').insert(member, {safe:true}, function(err, result) {
+        if(err){
+        	console.log('insert error');
+        }else{
+        	console.log('insert success');
+        }
     });
 };
 
