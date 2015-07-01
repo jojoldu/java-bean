@@ -4,11 +4,11 @@ var Server = mongo.Server,
 	Db = mongo.Db;
 
 var server = new Server('localhost', 27017, {auto_reconnect : true});
-db = new Db('memberdb', server);
+db = new Db('local', server);
 
 db.open(function(err, db){
 	if(!err){
-		console.log('Connected to "memberdb" database');
+		console.log('Connected to "local" database');
 		
 		db.collection('member', { strict : true }, function(err, collection){
 			
@@ -96,7 +96,7 @@ var populateDB = function() {
     {
     	id: 'jojoldu',
         name: 'DongUk Lee',
-        birtyDay: '870912',
+        birthDay: '870912',
         email : 'jojoldu@gmail.com',
         phone : '010-3583-1515'
     }];

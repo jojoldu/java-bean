@@ -1,7 +1,8 @@
 var express = require('express'),
-	member = require('../model/member')
+	member = require('model/member')
 
 var app = express();
+app.use(express.bodyParser());
 
 
 app.get('/member', member.findAll);
