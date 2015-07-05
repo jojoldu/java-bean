@@ -3,7 +3,7 @@ var mongo = require('mongodb');
 var Server = mongo.Server,
 	Db = mongo.Db;
 
-var server = new Server('localhost', 27017, {auto_reconnect : true});
+var server = new Server('127.0.0.1', 27017, {auto_reconnect : true});
 db = new Db('local', server);
 
 db.open(function(err, db){
@@ -60,7 +60,7 @@ exports.update = function(req, res){
 	console.log('update member : '+ id);
 	console.log(JSON.stringify(member));
 
-	db.collection('member').update({'id' : id}, member, {safe : true}, function(err, result){
+	db.collection('member').update({'id' : id}, {$set : {name : '222'}}, {safe : true}, function(err, result){
 
 		if(err){
 			console.log('update error : '+err);
